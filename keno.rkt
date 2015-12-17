@@ -94,7 +94,7 @@
 ;; Given a Keno pay table, generate a table of expected returns as a side effect,
 ;; returning nothing
 (provide/contract (generate-return-table (-> keno-pt? void?)))
-(require "probability.rkt")
+(require math/number-theory)
 
 (define (generate-return-table keno-pt)
   (printf "~a~n" (car keno-pt))
@@ -109,8 +109,8 @@
                         [(match-record (cdr bet-record))]
                       (let*[(match(car match-record))
                             (payoff(cadr match-record))
-                            (wins (* (choose spot match)
-                                     (choose (- 80 spot)(- 20 match))))]
+                            (wins (* (binomial spot match)
+                                     (binomial (- 80 spot)(- 20 match))))]
                         (values (+ total-wins wins)
                                 (+ expected-return (* payoff (/ wins (total-games)))))))])
         (printf "   ~a        $~a          ~a~n"
@@ -129,4 +129,4 @@
 
 ; Possible number of keno games
 (define (total-games)
-  (choose 80 20))
+  (binomial 80 20))
